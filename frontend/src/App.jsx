@@ -104,6 +104,14 @@ export default function App() {
         }
       />
       <Route
+        path="/bookings/:id/payment"
+        element={
+          <ProtectedRoute roles={['driver']}>
+            <PaymentPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/cars"
         element={
           <ProtectedRoute roles={['driver']}>
