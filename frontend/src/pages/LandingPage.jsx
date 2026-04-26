@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import Navbar from '../components/layout/Navbar.jsx';
 import Footer from '../components/layout/Footer.jsx';
+import { useAuth } from '../context/AuthContext.jsx';
 
 const steps = [
   ['Create your account', 'Choose driver or parking owner and complete your profile.'],
@@ -27,6 +28,9 @@ const features = [
 ];
 
 export default function LandingPage() {
+  const { user } = useAuth();
+  const targetPath = user ? '/dashboard' : '/register';
+
   return (
     <>
       <Navbar />
@@ -41,13 +45,27 @@ export default function LandingPage() {
                 clean booking tools, role-based dashboards, and professional reservation management.
               </p>
               <div className="hero-actions">
-                <Link className="btn btn-primary btn-lg" to="/register">
-                  Find Parking
-                  <ArrowRight size={18} />
-                </Link>
-                <Link className="btn btn-outline btn-lg" to="/register">
-                  List Your Parking
-                </Link>
+                {user ? (
+                  <>
+                    <Link className="btn btn-primary btn-lg" to="/dashboard">
+                      Find Parking
+                      <ArrowRight size={18} />
+                    </Link>
+                    <Link className="btn btn-outline btn-lg" to="/dashboard">
+                      List Your Parking
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link className="btn btn-primary btn-lg" to="/register">
+                      Get Started
+                      <ArrowRight size={18} />
+                    </Link>
+                    <Link className="btn btn-outline btn-lg" to="/login">
+                      Login to Search
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
 
@@ -144,10 +162,17 @@ export default function LandingPage() {
               <span className="eyebrow">Start with the right account</span>
               <h2>Join as a driver or owner and get the dashboard built for your role.</h2>
             </div>
-            <Link className="btn btn-primary btn-lg" to="/register">
-              Create your account
-              <ArrowRight size={18} />
-            </Link>
+            {user ? (
+              <Link className="btn btn-primary btn-lg" to="/dashboard">
+                Go to your dashboard
+                <ArrowRight size={18} />
+              </Link>
+            ) : (
+              <Link className="btn btn-primary btn-lg" to="/register">
+                Create your account
+                <ArrowRight size={18} />
+              </Link>
+            )}
           </div>
         </section>
       </main>

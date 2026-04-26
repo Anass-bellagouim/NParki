@@ -1,4 +1,4 @@
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { CarFront, LogOut, Menu, UserRound, X } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext.jsx';
@@ -7,7 +7,10 @@ import Button from '../ui/Button.jsx';
 export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [open, setOpen] = useState(false);
+
+  const isDashboard = location.pathname !== '/';
 
   const handleLogout = async () => {
     await logout();
@@ -29,21 +32,26 @@ export default function Navbar() {
         </button>
 
         <div className={`nav-links ${open ? 'open' : ''}`}>
-          <a href="/#how">How it works</a>
-          <a href="/#features">Features</a>
-          <a href="/#benefits">Benefits</a>
-          {user ? (
+          {!isDashboard && (
             <>
-              <NavLink to="/dashboard">Dashboard</NavLink>
-              <NavLink to="/profile" className="nav-user">
-                <UserRound size={17} />
-                {user.name}
-              </NavLink>
-              <Button variant="outline" onClick={handleLogout}>
-                <LogOut size={17} />
-                Logout
-              </Button>
+              <a href="/#how">How it works</a>
+              <a href="/#features">Features</a>
+              <a href="/#benefits">Benefits</a>
             </>
+          )}
+          {isDashboard ? (
+            user && (
+              <>
+                <NavLink to="/profile" className="nav-user">
+                  <UserRound size={17} />
+                  {user.name}
+                </NavLink>
+                <Button variant="outline" onClick={handleLogout}>
+                  <LogOut size={17} />
+                  Logout
+                </Button>
+              </>
+            )
           ) : (
             <div className="nav-actions">
               <Link className="btn btn-ghost btn-md" to="/login">Login</Link>
