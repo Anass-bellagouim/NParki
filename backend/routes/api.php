@@ -29,12 +29,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/parking-spots/{parkingSpot}', [ParkingSpotController::class, 'destroy']);
         Route::delete('/parking-images/{image}', [ParkingSpotController::class, 'destroyImage']);
         Route::patch('/bookings/{booking}/status', [BookingController::class, 'updateStatus']);
+        Route::post('/owner/scan-qr', [BookingController::class, 'scanQr']);
+        Route::post('/bookings/{booking}/confirm-cash', [BookingController::class, 'confirmCash']);
     });
 
     Route::middleware('role:driver')->group(function () {
         Route::get('/driver/dashboard', [DashboardController::class, 'driver']);
         Route::apiResource('/cars', CarController::class)->except(['show']);
         Route::post('/bookings', [BookingController::class, 'store']);
+        Route::post('/bookings/{booking}/payment', [BookingController::class, 'pay']);
         Route::patch('/bookings/{booking}/cancel', [BookingController::class, 'cancel']);
     });
 

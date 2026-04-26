@@ -16,7 +16,7 @@ return new class extends Migration
             $table->dateTime('start_time')->index();
             $table->dateTime('end_time')->index();
             $table->decimal('total_price', 10, 2);
-            $table->enum('status', ['pending', 'accepted', 'rejected', 'cancelled', 'completed'])->default('pending')->index();
+            $table->enum('status', ['pending', 'accepted', 'rejected', 'cancelled', 'checked_in', 'awaiting_payment', 'completed'])->default('pending')->index();
             $table->timestamps();
 
             $table->index(['parking_spot_id', 'status', 'start_time', 'end_time']);

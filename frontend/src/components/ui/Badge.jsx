@@ -1,6 +1,11 @@
 const statusMap = {
   active: 'success',
   accepted: 'success',
+  reserved: 'success',
+  'checked in': 'success',
+  checked_in: 'success',
+  'awaiting payment': 'warning',
+  awaiting_payment: 'warning',
   completed: 'neutral',
   pending: 'warning',
   rejected: 'danger',

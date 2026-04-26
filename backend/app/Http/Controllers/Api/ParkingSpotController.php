@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ParkingSpotRequest;
 use App\Http\Resources\ParkingSpotResource;
+use App\Models\Booking;
 use App\Models\ParkingImage;
 use App\Models\ParkingSpot;
 use Illuminate\Http\JsonResponse;
@@ -16,10 +17,13 @@ class ParkingSpotController extends Controller
 {
     public function index(Request $request)
     {
+        Booking::expireNoShows();
+
         $spots = ParkingSpot::query()
             ->with(['owner', 'images'])
             ->where('status', 'active')
             ->where('is_available', true)
+            ->whereDoesntHave('bookings', fn ($query) => $query->whereIn('status', Booking::ACTIVE_STATUSES))
             ->when($request->filled('city'), fn ($query) => $query->where('city', 'like', '%'.$request->city.'%'))
             ->when($request->filled('location'), fn ($query) => $query->where(function ($inner) use ($request) {
                 $inner->where('address', 'like', '%'.$request->location.'%')
@@ -35,6 +39,8 @@ class ParkingSpotController extends Controller
 
     public function ownerIndex(Request $request)
     {
+        Booking::expireNoShows();
+
         $spots = ParkingSpot::query()
             ->with(['images'])
             ->where('owner_id', $request->user()->id)
@@ -68,6 +74,8 @@ class ParkingSpotController extends Controller
 
     public function show(ParkingSpot $parkingSpot): ParkingSpotResource
     {
+        Booking::expireNoShows();
+
         return new ParkingSpotResource($parkingSpot->load(['owner', 'images']));
     }
 

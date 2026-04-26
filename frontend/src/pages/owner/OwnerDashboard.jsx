@@ -18,6 +18,7 @@ export default function OwnerDashboard() {
   const [stats, setStats] = useState({});
   const [spots, setSpots] = useState([]);
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
@@ -64,6 +65,7 @@ export default function OwnerDashboard() {
       }
     >
       {error && <div className="alert alert-error">{error}</div>}
+      {message && <div className="alert alert-success">{message}</div>}
       {loading ? (
         <div className="page-loader">Loading owner workspace...</div>
       ) : (
@@ -81,7 +83,7 @@ export default function OwnerDashboard() {
           <div className="content-header">
             <div>
               <h2>Your parking spots</h2>
-              <p>Manage availability, pricing, photos, and listing status.</p>
+              <p>Manage exact map points, gate QR codes, availability, pricing, photos, and listing status.</p>
             </div>
             <Button variant="outline" onClick={load}>Refresh</Button>
           </div>

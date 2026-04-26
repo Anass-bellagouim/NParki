@@ -25,6 +25,7 @@ class ParkingSpotResource extends JsonResource
             'available_to' => $this->available_to,
             'is_available' => $this->is_available,
             'approval_mode' => $this->approval_mode,
+            'gate_code' => $this->gate_code,
             'status' => $this->status,
             'images' => $this->whenLoaded('images', fn () => $this->images->map(fn ($image) => [
                 'id' => $image->id,

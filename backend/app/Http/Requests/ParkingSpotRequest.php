@@ -11,6 +11,14 @@ class ParkingSpotRequest extends FormRequest
         return $this->user()?->role === 'owner';
     }
 
+    public function prepareForValidation(): void
+    {
+        $this->merge([
+            'available_from' => $this->available_from === 'null' || $this->available_from === '' ? null : $this->available_from,
+            'available_to' => $this->available_to === 'null' || $this->available_to === '' ? null : $this->available_to,
+        ]);
+    }
+
     public function rules(): array
     {
         $required = $this->isMethod('post') ? 'required' : 'sometimes';
@@ -20,8 +28,8 @@ class ParkingSpotRequest extends FormRequest
             'description' => ['nullable', 'string', 'max:2000'],
             'address' => [$required, 'string', 'max:255'],
             'city' => [$required, 'string', 'max:120'],
-            'latitude' => ['nullable', 'numeric', 'between:-90,90'],
-            'longitude' => ['nullable', 'numeric', 'between:-180,180'],
+            'latitude' => [$required, 'numeric', 'between:-90,90'],
+            'longitude' => [$required, 'numeric', 'between:-180,180'],
             'price_per_hour' => [$required, 'numeric', 'min:0'],
             'price_per_day' => ['nullable', 'numeric', 'min:0'],
             'available_from' => ['nullable', 'date_format:H:i'],

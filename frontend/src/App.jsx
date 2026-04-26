@@ -9,6 +9,7 @@ import AddParkingSpot from './pages/owner/AddParkingSpot.jsx';
 import EditParkingSpot from './pages/owner/EditParkingSpot.jsx';
 import SearchParking from './pages/driver/SearchParking.jsx';
 import ParkingDetails from './pages/driver/ParkingDetails.jsx';
+import PaymentPage from './pages/driver/PaymentPage.jsx';
 import MyBookings from './pages/shared/MyBookings.jsx';
 import MyCars from './pages/driver/MyCars.jsx';
 import Profile from './pages/shared/Profile.jsx';

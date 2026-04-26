@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Button from '../ui/Button.jsx';
 import Input from '../ui/Input.jsx';
+import MapPicker from './MapPicker.jsx';
 
 const defaults = {
   title: '',
@@ -27,11 +28,28 @@ export default function ParkingSpotForm({ initialValues = {}, onSubmit, loading 
     setForm((current) => ({ ...current, [name]: type === 'checkbox' ? checked : value }));
   };
 
+  const updateMapLocation = ({ latitude, longitude }) => {
+    setForm((current) => ({ ...current, latitude, longitude }));
+  };
+
   const submit = (event) => {
     event.preventDefault();
     const payload = new FormData();
 
     Object.entries(form).forEach(([key, value]) => {
+      // Exclude 'images' array that comes from initialValues, 
+      // we only upload new images via the separate state.
+      if (key === 'images') return;
+      
+      // Ensure time inputs match H:i format
+      if (key === 'available_from' || key === 'available_to') {
+        if (value) {
+            value = value.toString().substring(0, 5);
+        } else {
+            value = '';
+        }
+      }
+
       payload.append(key, typeof value === 'boolean' ? (value ? '1' : '0') : value ?? '');
     });
 
@@ -47,8 +65,8 @@ export default function ParkingSpotForm({ initialValues = {}, onSubmit, loading 
         <Input label="Address" name="address" value={form.address} onChange={update} required />
         <Input label="Price per hour" name="price_per_hour" type="number" min="0" step="0.01" value={form.price_per_hour} onChange={update} required />
         <Input label="Price per day" name="price_per_day" type="number" min="0" step="0.01" value={form.price_per_day || ''} onChange={update} />
-        <Input label="Latitude" name="latitude" type="number" step="0.0000001" value={form.latitude || ''} onChange={update} />
-        <Input label="Longitude" name="longitude" type="number" step="0.0000001" value={form.longitude || ''} onChange={update} />
+        <Input label="Latitude" name="latitude" type="number" step="0.0000001" value={form.latitude || ''} onChange={update} required />
+        <Input label="Longitude" name="longitude" type="number" step="0.0000001" value={form.longitude || ''} onChange={update} required />
         <Input label="Available from" name="available_from" type="time" value={form.available_from || ''} onChange={update} />
         <Input label="Available to" name="available_to" type="time" value={form.available_to || ''} onChange={update} />
         <label className="field">
@@ -61,6 +79,20 @@ export default function ParkingSpotForm({ initialValues = {}, onSubmit, loading 
           </select>
         </label>
       </div>
+
+      <section className="map-field">
+        <div>
+          <h3>Exact map location</h3>
+          <p>Search the address or click the precise gate point on the map.</p>
+        </div>
+        <MapPicker
+          latitude={form.latitude}
+          longitude={form.longitude}
+          address={form.address}
+          city={form.city}
+          onChange={updateMapLocation}
+        />
+      </section>
 
       <label className="field">
         <span>Description</span>

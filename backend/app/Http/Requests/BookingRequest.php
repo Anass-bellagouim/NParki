@@ -16,8 +16,8 @@ class BookingRequest extends FormRequest
         return [
             'parking_spot_id' => ['required', 'exists:parking_spots,id'],
             'car_id' => ['required', 'exists:cars,id'],
-            'start_time' => ['required', 'date', 'after_or_equal:now'],
-            'end_time' => ['required', 'date', 'after:start_time'],
+            'start_time' => ['nullable', 'date', 'after_or_equal:now'],
+            'end_time' => ['nullable', 'date', 'after:start_time'],
         ];
     }
 }

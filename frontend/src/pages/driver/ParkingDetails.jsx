@@ -1,27 +1,19 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { CalendarPlus, Mail, MapPin, Navigation, Phone } from 'lucide-react';
 import DashboardLayout from '../../components/layout/DashboardLayout.jsx';
 import Card from '../../components/ui/Card.jsx';
 import Button from '../../components/ui/Button.jsx';
-import Input from '../../components/ui/Input.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 import api, { getApiError } from '../../api/client.js';
 
-const nowInputValue = () => {
-  const date = new Date();
-  date.setMinutes(date.getMinutes() - date.getTimezoneOffset() + 60);
-  return date.toISOString().slice(0, 16);
-};
-
 export default function ParkingDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [spot, setSpot] = useState(null);
   const [cars, setCars] = useState([]);
   const [booking, setBooking] = useState({
     car_id: '',
-    start_time: nowInputValue(),
-    end_time: '',
   });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -43,7 +35,21 @@ export default function ParkingDetails() {
       return '#';
     }
 
-    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${spot.address}, ${spot.city}`)}`;
+    const query = spot.latitude && spot.longitude ? `${spot.latitude},${spot.longitude}` : `${spot.address}, ${spot.city}`;
+
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+  }, [spot]);
+
+  const mapEmbed = useMemo(() => {
+    if (!spot?.latitude || !spot?.longitude) {
+      return '';
+    }
+
+    const lat = Number(spot.latitude);
+    const lng = Number(spot.longitude);
+    const delta = 0.006;
+
+    return `https://www.openstreetmap.org/export/embed.html?bbox=${lng - delta}%2C${lat - delta}%2C${lng + delta}%2C${lat + delta}&layer=mapnik&marker=${lat}%2C${lng}`;
   }, [spot]);
 
   const update = (event) => {
@@ -62,6 +68,8 @@ export default function ParkingDetails() {
         parking_spot_id: Number(id),
       });
       setMessage(data.message);
+      // Auto redirect to bookings after 2.5 seconds so they can see the QR code
+      setTimeout(() => navigate('/bookings'), 2500);
     } catch (requestError) {
       setError(getApiError(requestError));
     } finally {
@@ -72,7 +80,12 @@ export default function ParkingDetails() {
   return (
     <DashboardLayout title="Parking details" eyebrow="Reserve spot">
       {error && <div className="alert alert-error">{error}</div>}
-      {message && <div className="alert alert-success">{message}</div>}
+      {message && (
+        <div className="alert alert-success" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          {message}
+          <Link to="/bookings" className="btn btn-sm btn-outline">Go to my QR Code</Link>
+        </div>
+      )}
 
       {!spot ? (
         <div className="page-loader">Loading parking spot...</div>
@@ -122,11 +135,19 @@ export default function ParkingDetails() {
                   </a>
                 )}
               </div>
+              {mapEmbed && (
+                <iframe
+                  className="details-map"
+                  title={`${spot.title} exact map location`}
+                  src={mapEmbed}
+                  loading="lazy"
+                />
+              )}
             </Card>
           </section>
 
           <Card className="booking-form-card">
-            <h2>Book this spot</h2>
+            <h2>Reserve this spot</h2>
             {!cars.length ? (
               <div className="empty-state compact">
                 Add a car before booking.
@@ -144,11 +165,12 @@ export default function ParkingDetails() {
                     ))}
                   </select>
                 </label>
-                <Input label="Start time" type="datetime-local" name="start_time" value={booking.start_time} onChange={update} required />
-                <Input label="End time" type="datetime-local" name="end_time" value={booking.end_time} onChange={update} required />
+                <div className="booking-note">
+                  You have 20 minutes to arrive and scan the gate QR. Billing starts only after the entry scan.
+                </div>
                 <Button type="submit" disabled={loading}>
                   <CalendarPlus size={18} />
-                  {loading ? 'Booking...' : 'Book parking'}
+                  {loading ? 'Reserving...' : 'Reserve parking'}
                 </Button>
               </form>
             )}

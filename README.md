@@ -1,6 +1,6 @@
 # NParki
 
-NParki is a shared parking platform built with a Laravel REST API and a React/Vite frontend. Parking owners publish available spots, manage bookings, and track earnings. Drivers search, book, manage cars, view booking history, and open directions.
+NParki is a shared parking platform built with a Laravel REST API and a React/Vite frontend. Parking owners publish available spots with exact map coordinates and gate QR codes, manage bookings, and track earnings. Drivers search, reserve, scan the gate QR on entry and exit, choose cash or online payment, manage cars, view booking history, and open directions.
 
 ## Structure
 
@@ -68,6 +68,8 @@ GET    /api/bookings
 POST   /api/bookings
 PATCH  /api/bookings/{booking}/status
 PATCH  /api/bookings/{booking}/cancel
+POST   /api/bookings/{booking}/gate-scan
+POST   /api/bookings/{booking}/payment
 
 GET    /api/cars
 POST   /api/cars
@@ -81,7 +83,7 @@ Registration requires `name`, `email`, `phone`, `password`, `password_confirmati
 
 Roles:
 
-- `owner`: owner dashboard, spot CRUD, image uploads, booking approval/rejection, earnings summary.
-- `driver`: driver dashboard, search, booking creation/cancellation, car management.
+- `owner`: owner dashboard, spot CRUD, exact map picker, gate QR codes, image uploads, booking approval/rejection, earnings summary.
+- `driver`: driver dashboard, search, 20-minute reservations, QR entry/exit scans, cash/online payment choice, car management.
 
 The React app protects dashboard routes and redirects users to the correct dashboard after login/register.

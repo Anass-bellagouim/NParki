@@ -3,9 +3,15 @@ import { Edit, MapPin, Navigation, Trash2 } from 'lucide-react';
 import Badge from '../ui/Badge.jsx';
 import Button from '../ui/Button.jsx';
 
+const mapQuery = (spot) => (
+  spot.latitude && spot.longitude
+    ? `${spot.latitude},${spot.longitude}`
+    : `${spot.address}, ${spot.city}`
+);
+
 export default function ParkingCard({ spot, ownerMode = false, onDelete }) {
   const image = spot.images?.[0]?.url;
-  const mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${spot.address}, ${spot.city}`)}`;
+  const mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery(spot))}`;
 
   return (
     <article className="parking-card">

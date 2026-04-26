@@ -54,7 +54,7 @@ export default function DriverDashboard() {
           <section className="quick-panel">
             <div>
               <h2>Ready to reserve a spot?</h2>
-              <p>Search by city, compare prices, view details, and book with one of your saved cars.</p>
+              <p>Search by city, open exact directions, reserve a spot, then scan the gate QR when you arrive.</p>
             </div>
             <Link className="btn btn-outline btn-md" to="/cars">Manage cars</Link>
           </section>

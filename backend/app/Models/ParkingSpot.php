@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class ParkingSpot extends Model
 {
@@ -25,6 +26,7 @@ class ParkingSpot extends Model
         'available_to',
         'is_available',
         'approval_mode',
+        'gate_code',
         'status',
     ];
 
@@ -38,6 +40,15 @@ class ParkingSpot extends Model
             'is_available' => 'boolean',
             'approval_mode' => 'boolean',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function (ParkingSpot $spot) {
+            if (! $spot->gate_code) {
+                $spot->gate_code = 'NP-'.Str::upper(Str::random(10));
+            }
+        });
     }
 
     public function owner(): BelongsTo
